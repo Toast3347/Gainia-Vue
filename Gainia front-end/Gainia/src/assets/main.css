@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Iceland&family=Megrim&family=Nabla&family=Silkscreen:wght@400;700&display=swap');
+
+/* Header */
+.navbar-brand span {
+  color: #2c3e50;
+}
+
+nav {
+  background-color: #008080;
+  font-family: "Doto", sans-serif;
+}
+
+nav div{
+  padding-left:20px;
+  padding-right:20px;
+}
+nav img{
+  width: 100px;
+  padding-left: 20px;
+}
+
+nav span {
+  font-weight: 600;
+  font-size: 1.5rem;
+  padding-left:20px;
+  padding-right:20px;
+  color: #ffffff !important;
+}
+
+.nav-link {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #ffffff !important;
+}
+
+.nav-link:hover {
+  color: #FF6B6B !important;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  font-size: 1.2rem;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #008080;
+  font-family: "Doto", sans-serif;
+  font-size: 1.1rem;
+  padding-left:20px;
+  padding-right:20px;
+}
+
+footer a {
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+
+/* Default body */
+p {
+  color: #495057;
+  font-family: "Iceland", sans-serif;
+}
+
+body {
+  background-color: #EDF1D6;
+}
+
+.page{
+  min-height: 100vh;
+}
+
+/* About page */
+.about {
+  padding: 50px 20px;
+}
+
+.about h1 {
+  font-family: "Megrim", sans-serif;
+  font-size: 3rem;
+  color: #2c3e50;
+}
+
+
+/*contact page */
+.contact a {
+  text-decoration: none;
+}
+
+.contact a:hover {
+  text-decoration: underline;
+}
+
+/*Progress page */
+.chart-container {
+  position: relative;
+  height: 400px;
+  width: 100%;
+}
+
+
+
+
