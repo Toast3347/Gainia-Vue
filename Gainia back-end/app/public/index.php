@@ -1,7 +1,10 @@
 <?php
+//CORS headers
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
 header("Access-Control-Allow-Methods: *");
+//This is unsafe and should be changed
+//For now it's fine because it isn't a website that will go live :)
 
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
