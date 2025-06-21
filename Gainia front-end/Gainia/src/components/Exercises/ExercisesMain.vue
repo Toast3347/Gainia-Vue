@@ -1,19 +1,25 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import api from "@/services/api";
 import { useRouter } from 'vue-router';
+import { useAuthStore } from "@/stores/auth";
 const router = useRouter();
 
 const exercises = ref([]);
 const errorMessage = ref("");
 const loading = ref(false);
 
+const authStore = useAuthStore();
+const userRole = authStore.user?.role;
+
+
 async function fetchExercises() {
   loading.value = true;
   errorMessage.value = "";
 
   try {
-    const response = await axios.get("http://localhost/exercises/standard");
+    const response = await api.get("/exercises/standard");
     exercises.value = response.data;
   } catch (error) {
     errorMessage.value = error.response
@@ -32,7 +38,7 @@ function editExercise(exerciseId) {
 async function deleteExercise(exerciseId) {
   if (confirm("Are you sure you want to delete this exercise?")) {
     try {
-      await axios.delete(`http://localhost/exercises/standard/${exerciseId}`);
+      await api.delete(`/exercises/standard/${exerciseId}`);
 
       fetchExercises();
     } catch (error) {
@@ -50,7 +56,7 @@ onMounted(() => {
 <template>
   <main>
     <div class="container py-5">
-      <h1 class="display-4 fw-bold text-center mb-4">Exercises</h1>
+      <h1 class="display-4 fw-bold text-center mb-4">Exercises {{role}}</h1>
 
       <div v-if="loading" class="text-center">
         <div class="spinner-border text-primary" role="status">
@@ -73,7 +79,7 @@ onMounted(() => {
                 <th>Name</th>
                 <th>Muscle Group</th>
                 <th>Description</th>
-                <th>Actions</th>
+                <th v-if="userRole === 'admin'">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -82,13 +88,13 @@ onMounted(() => {
                 <td>{{ exercise.muscle_group }}</td>
                 <td>{{ exercise.description }}</td>
                 <td>
-                  <button
+                  <button v-if="userRole === 'admin'"
                     class="btn btn-primary btn-sm me-2"
                     @click="editExercise(exercise.exercise_id)"
                   >
                     Edit
                   </button>
-                  <button
+                  <button v-if="userRole === 'admin'"
                     class="btn btn-danger btn-sm"
                     @click="deleteExercise(exercise.exercise_id)"
                   >

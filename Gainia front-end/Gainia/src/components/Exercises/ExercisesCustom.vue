@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import api from "@/services/api";
+import { useAuthStore } from "@/stores/auth";
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
@@ -8,14 +9,15 @@ const exercises = ref([]);
 const errorMessage = ref("");
 const loading = ref(false);
 
-const user = JSON.parse(localStorage.getItem("user"));
-const userId = user ? user.user_id : 1; //change this later to null
+const authStore = useAuthStore();
+const userId = authStore.user?.user_id; 
+
 async function fetchExercises() {
   loading.value = true;
   errorMessage.value = "";
 
   try {
-    const response = await axios.get("http://localhost/exercises/custom/user/" + userId);
+    const response = await api.get("/exercises/custom/user/" + userId);
     exercises.value = response.data;
   } catch (error) {
     errorMessage.value = error.response

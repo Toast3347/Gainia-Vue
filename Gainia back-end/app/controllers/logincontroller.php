@@ -13,10 +13,18 @@ class Logincontroller extends Controller{
         $this->service = new LoginService();
     }
 
-    public function createUser($user)
+    public function createUser()
     {
-        $result = $this->service->createUser($user);
-        return $this->respond($result);
+        try {
+            $user = $this->createObjectFromPostedJson("Models\\Requests\\CreateAccount");
+            $result = $this->service->createUser($user);
+            return $this->respond($result);
+        }catch(\InvalidArgumentException $e) {
+            return $this->respondWithError(400, $e->getMessage());
+        }
+        catch (\Exception $e) {
+            return $this->respondWithError(500, $e->getMessage());
+        }
     }
 
     public function getUserByUsername($username)
@@ -47,8 +55,8 @@ class Logincontroller extends Controller{
                 unset($user['password']); // Remove password from user data for security purposes
 
                 $payload = [
-                    'user_id' => $user['id'],
-                    'username' => $user['username']
+                    'user_id' => $user['user_id'],
+                    'username' => $user['name']
                 ];
                 $token = JwtHelper::generateToken($payload);
 

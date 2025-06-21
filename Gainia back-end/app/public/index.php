@@ -12,8 +12,48 @@ ini_set("display_errors", 1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Bramus\Router\Router;
+use Helpers\JwtHelper;
 
 $router = new Router();
+
+// Middleware for JWT validation
+$router->before('GET|POST|PUT|DELETE', '/.*', function() {
+    $request_uri = $_SERVER['REQUEST_URI'];
+    $path_parts = explode('/', parse_url($request_uri, PHP_URL_PATH));
+    $base_path_index = array_search('public', $path_parts);
+    $api_path = '/';
+    if ($base_path_index !== false && isset($path_parts[$base_path_index + 1])) {
+        $api_path .= implode('/', array_slice($path_parts, $base_path_index + 1));
+    } else if ($base_path_index === false) {
+        $api_path = parse_url($request_uri, PHP_URL_PATH);
+    }
+
+    if (($_SERVER['REQUEST_METHOD'] === 'POST' && $api_path === '/login') ||
+        ($_SERVER['REQUEST_METHOD'] === 'POST' && $api_path === '/user')) {
+        return;
+    }
+
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+
+    if (!$authHeader) {
+        header('HTTP/1.1 401 Unauthorized');
+        echo json_encode(['errorMessage' => 'Authorization header not found']);
+        exit();
+    }
+
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $jwt = $matches[1];
+        if (!$jwt || !JwtHelper::validateToken($jwt)) {
+            header('HTTP/1.1 401 Unauthorized');
+            echo json_encode(['errorMessage' => 'Invalid or expired token']);
+            exit();
+        }
+    } else {
+        header('HTTP/1.1 401 Unauthorized');
+        echo json_encode(['errorMessage' => 'Bearer token not found in Authorization header']);
+        exit();
+    }
+});
 
 $router->setNamespace('Controllers');
 
@@ -57,6 +97,6 @@ $router->delete('/progress/{progressId}', 'ProgressController@deleteProgress');
 //login routes
 $router->get('/user/{username}', 'LoginController@getUserByUsername');
 $router->post('/user', 'LoginController@createUser');
-$router->post('/login', 'LoginController@loginUser');
+$router->post('/login', 'LoginController@login');
 
 $router->run();

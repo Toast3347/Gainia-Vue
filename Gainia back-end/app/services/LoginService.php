@@ -3,6 +3,7 @@
 namespace Services;
 
 use Repositories\LoginRepository;
+use Services\ValidationService;
 
 class Loginservice
 {
@@ -20,6 +21,11 @@ class Loginservice
 
     public function createUser($user): bool
     {
+        $passwordErrors = ValidationService::validatePassword($user->password);
+        if (!empty($passwordErrors)) {
+            throw new \InvalidArgumentException("Password is not strong enough.");
+        }
+        $user->password = password_hash($user->password, PASSWORD_DEFAULT);
         $user = $this->repository->create($user);
         return $user;
     }

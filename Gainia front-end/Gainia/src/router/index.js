@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,25 +13,28 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue'),
+      component: () => import('../views/auth/LoginView.vue'),
     },
     {
       path: '/logout',
       name: 'logout',
-      component: () => import('../views/LogOutView.vue'),
+      component: () => import('../views/auth/LogOutView.vue'),
+    },
+    {
+      path: '/create-account',
+      name: 'create-account',
+      component: () => import('../views/auth/CreateAccountView.vue'),
     },
     {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/exercises',
@@ -75,5 +79,23 @@ const router = createRouter({
     },
   ],
 })
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  const isAuthenticated = authStore.isAuthenticated;
+
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+
+  if (requiresAuth && !isAuthenticated) {
+
+    next({ name: 'login' });
+  } else if ((to.name === 'login' || to.name === 'create-account') && isAuthenticated) {
+
+    next({ name: 'dashboard' });
+  } else {
+
+    next();
+  }
+});
 
 export default router

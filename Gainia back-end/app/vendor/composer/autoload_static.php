@@ -20,6 +20,10 @@ class ComposerStaticInit1c8a1ef3d6be7e51a0a9b9c991ff9fc9
         array (
             'Models\\' => 7,
         ),
+        'H' => 
+        array (
+            'Helpers\\' => 8,
+        ),
         'F' => 
         array (
             'Firebase\\JWT\\' => 13,
@@ -46,6 +50,10 @@ class ComposerStaticInit1c8a1ef3d6be7e51a0a9b9c991ff9fc9
         'Models\\' => 
         array (
             0 => __DIR__ . '/../..' . '/models',
+        ),
+        'Helpers\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/helpers',
         ),
         'Firebase\\JWT\\' => 
         array (
