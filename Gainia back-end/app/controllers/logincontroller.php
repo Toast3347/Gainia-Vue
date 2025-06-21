@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use Services\LoginService;
+use Helpers\JwtHelper;
 
 class Logincontroller extends Controller{
     private $service;
@@ -36,11 +37,31 @@ class Logincontroller extends Controller{
         return $this->respond($result);
     }
 
-    public function login($username, $password)
+    public function login()
     {
-        $result = $this->service->login($username, $password);
-        return $this->respond($result);
-    }
+        try {
+            $loginDetails = $this->createObjectFromPostedJson("Models\\requests\\Login");
+            $user = $this->service->getUserByUsername($loginDetails->username);
 
+            if ($user && password_verify($loginDetails->password, $user['password'])) {
+                unset($user['password']); // Remove password from user data for security purposes
+
+                $payload = [
+                    'user_id' => $user['id'],
+                    'username' => $user['username']
+                ];
+                $token = JwtHelper::generateToken($payload);
+
+                return $this->respond([
+                    'token' => $token,
+                    'user' => $user
+                ]);
+            } else {
+                return $this->respondWithError(401, 'Invalid credentials');
+            }
+        } catch (\Exception $e) {
+            return $this->respondWithError(500, $e->getMessage());
+        }
+    }
 
 }
