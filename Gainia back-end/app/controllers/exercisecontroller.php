@@ -37,21 +37,20 @@ class ExerciseController extends Controller
     public function createStandardExercise()
     {
         try {
-            sleep(2);
-            $exercise = $this->createObjectFromPostedJson("Models\\Exercise");
+            $exercise = $this->createObjectFromPostedJson("Models\Exercise");
             $exercise = $this->service->createStandardExercise($exercise);
 
         } catch (Exception $e) {
             $this->respondWithError(500, $e->getMessage());
         }
 
-        $this->respond($exercise);
+        $this->respondCreated($exercise);
     }
 
     public function createCustomExercise($exercise)
     {
         $result = $this->service->createCustomExercise($exercise);
-        return $this->respond($result);
+        return $this->respondCreated($result);
     }
 
     public function updateStandardExercise($exercise)

@@ -57,6 +57,6 @@ $router->delete('/progress/{progressId}', 'ProgressController@deleteProgress');
 //login routes
 $router->get('/user/{username}', 'LoginController@getUserByUsername');
 $router->post('/user', 'LoginController@createUser');
-
+$router->post('/login', 'LoginController@loginUser');
 
 $router->run();

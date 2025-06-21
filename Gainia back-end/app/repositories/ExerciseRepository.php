@@ -10,9 +10,15 @@ class ExerciseRepository extends BaseRepository
     {
         $sql = "INSERT INTO Exercises (name, muscle_group, description) VALUES (:name, :muscle_group, :description)";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindParam(':name', $exercise->getName());
-        $stmt->bindParam(':muscle_group', $exercise->getMuscleGroup());
-        $stmt->bindParam(':description', $exercise->getDescription());
+
+        $name = $exercise->getName();
+        $muscle_group = $exercise->getMuscleGroup();
+        $description = $exercise->getDescription();
+
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':muscle_group', $muscle_group);
+        $stmt->bindParam(':description', $description);
+
         return $stmt->execute();
     }
 

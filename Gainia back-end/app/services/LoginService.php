@@ -34,12 +34,19 @@ class Loginservice
         return $user;
     }
 
-    public function login($username, $password)
+    public function login($loginDetails)
     {
-        $user = $this->repository->getByUsername($username);
-        if ($user && password_verify($password, $user['password'])) {
-            return true;
+        try{
+            $username = $loginDetails->username;
+            $password = $loginDetails->password;
+            $user = $this->repository->getByUsername($username);
+            if ($user && password_verify($password, $user['password'])) {
+                return true;
+            }
+            return false; 
+        } catch (\Exception $e) {
+            error_log("Error in login: " . $e->getMessage());
+            throw new \Exception("Login failed due to an internal error.");
         }
-        return false; 
     }
 }

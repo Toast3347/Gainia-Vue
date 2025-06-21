@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue';
 import ExercisesMain from '../../components/Exercises/ExercisesMain.vue'
 import ExercisesCustom from '../../components/Exercises/ExercisesCustom.vue'
 
@@ -8,7 +7,9 @@ import ExercisesCustom from '../../components/Exercises/ExercisesCustom.vue'
 
 <template>
   <main class="page">
+    <div class="container mt-4">
     <a href="/exercises/add" class="btn btn-primary me-2">Add exercise</a>
+    </div>
     <ExercisesMain />
     <ExercisesCustom />
   </main>

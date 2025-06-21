@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const exercises = ref([]);
 const errorMessage = ref("");
@@ -23,8 +25,8 @@ async function fetchExercises() {
 }
 
 function editExercise(exerciseId) {
-  alert(`Edit exercise with ID: ${exerciseId}`);
-  // Add your edit logic here
+  if (!exerciseId) return;
+  router.push(`/exercises/edit/${exerciseId}`);
 }
 
 async function deleteExercise(exerciseId) {
@@ -33,8 +35,6 @@ async function deleteExercise(exerciseId) {
       await axios.delete(`http://localhost/exercises/standard/${exerciseId}`);
 
       fetchExercises();
-
-      alert("Exercise deleted successfully!");
     } catch (error) {
       console.error("Error deleting exercise:", error);
       alert("Failed to delete the exercise. Please try again.");
@@ -77,7 +77,7 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(exercise, index) in exercises" :key="exercise.exercise_id">
+              <tr v-for="(exercise) in exercises" :key="exercise.exercise_id">
                 <td>{{ exercise.name }}</td>
                 <td>{{ exercise.muscle_group }}</td>
                 <td>{{ exercise.description }}</td>

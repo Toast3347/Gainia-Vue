@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 
 const exerciseId = ref(""); // Stores the selected exercise ID
+const exerciseKey = ref("");
 const exerciseType = ref(""); // Stores the type of the selected exercise (standard or custom)
 const targetWeight = ref("");
 const targetReps = ref("");
@@ -17,37 +18,33 @@ const user = JSON.parse(localStorage.getItem("user"));
 const userId = user ? user.user_id : 1; // Change this later to null
 
 async function addGoal() {
-  errorMessage.value = "";
-  successMessage.value = "";
+  clearMessages();
 
-  if (!exerciseId.value || !exerciseType.value || !targetWeight.value || !targetReps.value || !deadline.value) {
-    errorMessage.value = "All fields are required.";
-    return;
-  }
+  if (!checkFields()) return;
 
   try {
     const payload = {
       user_id: userId,
       target_weight: targetWeight.value,
       target_reps: targetReps.value,
-      deadline: deadline.value,
+      deadline: new Date(deadline.value),
       achieved: false,
     };
 
     if (exerciseType.value === "standard") {
-      payload.exercise_id = exerciseId.value; 
+      payload.exercise_id = exerciseId.value;
     } else if (exerciseType.value === "custom") {
       payload.custom_exercise_id = exerciseId.value;
     }
 
-    await axios.post("http://localhost/goals", payload);
-
-    successMessage.value = "Goal added successfully!";
-    exerciseId.value = "";
-    exerciseType.value = "";
-    targetWeight.value = "";
-    targetReps.value = "";
-    deadline.value = "";
+    const response =await axios.post("http://localhost/goals", payload);
+    if (response.status === 201) {
+      successMessage.value = "Exercise added successfully!";
+      clearForm();
+    }
+    else {
+      errorMessage.value = "Failed to add goal.";
+    }
   } catch (error) {
     errorMessage.value = error.response
       ? error.response.data.message
@@ -71,10 +68,35 @@ async function fetchAllExercises() {
   }
 }
 
+//fix
+
 function updateExerciseType() {
-  const selectedExercise = exercises.value.find(ex => ex.id == exerciseId.value);
-  exerciseType.value = selectedExercise ? selectedExercise.type : "";
-  console.log("Updated exerciseType:", exerciseType.value); // Debugging
+  const [id, type] = exerciseKey.value.split("-")
+  const selectedExercise = exercises.value.find(
+    ex => String(ex.id) === id && ex.type === type
+  )
+  exerciseType.value = selectedExercise ? selectedExercise.type : ""
+}
+
+function clearMessages() {
+  errorMessage.value = "";
+  successMessage.value = "";
+}
+
+function clearForm() {
+  exerciseId.value = "";
+  exerciseType.value = "";
+  targetWeight.value = "";
+  targetReps.value = "";
+  deadline.value = "";
+}
+
+function checkFields() {
+  if (!exerciseId.value || !exerciseType.value || !targetWeight.value || !targetReps.value || !deadline.value) {
+    errorMessage.value = "All fields are required.";
+    return false;
+  }
+  return true;
 }
 
 onMounted(() => {
@@ -101,17 +123,17 @@ onMounted(() => {
           id="exerciseId"
           class="form-select"
           v-model="exerciseId"
-          @change="updateExerciseType"
+          @change="updateExerciseType()"
           required
         >
           <option value="" disabled>Select an exercise</option>
           <option
-            v-for="exercise in exercises"
-            :key="exercise.id"
-            :value="exercise.id"
+            v-for="ex in exercises"
+            :key="`${ex.id}-${ex.type}`"
+            :value="`${ex.id}-${ex.type}`"
           >
-            {{ exercise.name }} ({{ exercise.type }})
-          </option>
+            {{ ex.name }} ({{ ex.type }})
+        </option>
         </select>
       </div>
 

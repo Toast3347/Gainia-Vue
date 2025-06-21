@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const exercises = ref([]);
 const errorMessage = ref("");
@@ -26,8 +28,9 @@ async function fetchExercises() {
 
 function editExercise(exerciseId) {
   alert(`Edit exercise with ID: ${exerciseId}`);
-  
-  
+  if (!exerciseId) return;
+  router.push(`/exercises/edit/${exerciseId}`);
+
 }
 
 async function deleteExercise(exerciseId) {
@@ -81,7 +84,7 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(exercise, index) in exercises" :key="exercise.exercise_id">
+              <tr v-for="(exercise) in exercises" :key="exercise.custom_exercise_id">
                 <td>{{ exercise.name }}</td>
                 <td>{{ exercise.muscle_group }}</td>
                 <td>{{ exercise.description }}</td>
@@ -89,13 +92,13 @@ onMounted(() => {
                 <td>
                   <button
                     class="btn btn-primary btn-sm me-2"
-                    @click="editExercise(exercise.exercise_id)"
+                    @click="editExercise(exercise.custom_exercise_id)"
                   >
                     Edit
                   </button>
                   <button
                     class="btn btn-danger btn-sm"
-                    @click="deleteExercise(exercise.exercise_id)"
+                    @click="deleteExercise(exercise.custom_exercise_id)"
                   >
                     Delete
                   </button>

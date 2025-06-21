@@ -10,22 +10,36 @@ const successMessage = ref("");
 
 async function addExercise() {
   try {
+    clearMessages();
     const response = await axios.post("http://localhost/exercises/standard", {
       name: exerciseName.value,
       muscle_group: muscleGroup.value,
       description: description.value,
     });
-    successMessage.value = "Exercise added successfully!";
-    errorMessage.value = "";
-    exerciseName.value = "";
-    muscleGroup.value = "";
-    description.value = "";
+    if (response.status === 201) {
+      successMessage.value = "Exercise added successfully!";
+      clearForm();
+    }
+    else{
+      errorMessage.value = "Failed to add exercise.";
+    }
   } catch (error) {
     errorMessage.value = error.response
       ? error.response.data.message
       : "An error occurred while adding the exercise.";
     successMessage.value = "";
   }
+}
+
+function clearMessages() {
+  errorMessage.value = "";
+  successMessage.value = "";
+}
+
+function clearForm() {
+  exerciseName.value = "";
+  muscleGroup.value = "";
+  description.value = "";
 }
 </script>
 
