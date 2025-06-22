@@ -18,10 +18,6 @@ class ProgressService
         return $this->repository->getAllByUserId($userId);
     }
 
-    public function createProgress($progress): bool
-    {
-        return $this->repository->create($progress);
-    }
     public function updateProgress($progress): bool
     {
         return $this->repository->update($progress);
@@ -29,5 +25,17 @@ class ProgressService
     public function deleteProgress($progress): bool
     {
         return $this->repository->delete($progress);
+    }
+
+    public function addProgressEntry($userId, array $exercise, $workoutDate)
+    {
+        $this->repository->create(
+            $userId,
+            $exercise['exercise_id'],
+            $exercise['custom_exercise_id'],
+            $exercise['weight'],
+            $exercise['reps'],
+            $workoutDate
+        );
     }
 }

@@ -4,16 +4,19 @@ namespace Services;
 
 use Repositories\WorkoutRepository;
 use Services\PrService;
+use Services\ProgressService;
 
 class WorkoutService
 {
     private $repository;
     private $prService;
+    private $progressService;
 
     public function __construct()
     {
         $this->repository = new WorkoutRepository();
         $this->prService = new PrService();
+        $this->progressService = new ProgressService();
     }
 
     public function createWorkout($userId, $workoutDate, $exercises = []): bool
@@ -22,6 +25,7 @@ class WorkoutService
         if ($result) {
             foreach ($exercises as $exercise) {
                 $this->prService->checkForNewPr($userId, (array)$exercise, $workoutDate);
+                $this->progressService->addProgressEntry($userId, (array)$exercise, $workoutDate);
             }
         }
         return $result;

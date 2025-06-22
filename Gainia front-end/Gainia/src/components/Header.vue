@@ -54,6 +54,8 @@ const dashboardUrl = computed(() => {
             <li class="nav-item">
               <a class="nav-link" href="/exercises">Exercises</a>
             </li>
+          </template>
+          <template v-if="isLoggedIn && userRole !== 'admin'">
             <li class="nav-item">
               <a class="nav-link" href="/goals">Goals</a>
             </li>

@@ -29,19 +29,19 @@ class ProgressRepository extends BaseRepository
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function create($progress): bool
+    public function create($userId, $exerciseId, $customExerciseId, $weight, $reps, $date): bool
     {
         $sql = "
             INSERT INTO ProgressTracking (user_id, exercise_id, custom_exercise_id, weight, reps, record_date)
             VALUES (:user_id, :exercise_id, :custom_exercise_id, :weight, :reps, :record_date)
         ";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindParam(':user_id', $progress->user_id);
-        $stmt->bindParam(':exercise_id', $progress->exercise_id);
-        $stmt->bindParam(':custom_exercise_id', $progress->custom_exercise_id);
-        $stmt->bindParam(':weight', $progress->weight);
-        $stmt->bindParam(':reps', $progress->reps);
-        $stmt->bindParam(':record_date', $progress->record_date);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->bindParam(':exercise_id', $exerciseId);
+        $stmt->bindParam(':custom_exercise_id', $customExerciseId);
+        $stmt->bindParam(':weight', $weight);
+        $stmt->bindParam(':reps', $reps);
+        $stmt->bindParam(':record_date', $date);
         return $stmt->execute();
     }
 

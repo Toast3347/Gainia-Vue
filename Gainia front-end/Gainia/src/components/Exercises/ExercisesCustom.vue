@@ -29,7 +29,6 @@ async function fetchExercises() {
 }
 
 function editExercise(exerciseId) {
-  alert(`Edit exercise with ID: ${exerciseId}`);
   if (!exerciseId) return;
   router.push(`/exercises/edit/${exerciseId}`);
 
