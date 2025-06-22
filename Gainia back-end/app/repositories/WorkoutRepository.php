@@ -4,21 +4,21 @@ namespace Repositories;
 
 class WorkoutRepository extends BaseRepository
 {
-    public function create($workout, $exercises = []): bool
+    public function create($userId, $workoutDate, $exercises = []): bool
     {
         try {
             $this->connection->beginTransaction();
 
-            $sql = "INSERT INTO workouts (user_id, workout_date) VALUES (:user_id, :workout_date)";
+            $sql = "INSERT INTO Workouts (user_id, workout_date) VALUES (:user_id, :workout_date)";
             $stmt = $this->connection->prepare($sql);
-            $stmt->bindParam(':user_id', $workout->getUserId());
-            $stmt->bindParam(':workout_date', $workout->getWorkoutDate());
+            $stmt->bindValue(':user_id', $userId);
+            $stmt->bindValue(':workout_date', $workoutDate);
             $stmt->execute();
 
             $workoutId = $this->connection->lastInsertId();
 
             foreach ($exercises as $exercise) {
-                $this->addExerciseToWorkout($workoutId, $exercise);
+                $this->addExerciseToWorkout($workoutId, (array)$exercise);
             }
 
             $this->connection->commit();
@@ -88,7 +88,7 @@ class WorkoutRepository extends BaseRepository
             $stmt->bindParam(':workout_id', $workoutId);
             $stmt->execute();
 
-            $sql = "DELETE FROM workouts WHERE workout_id = :workout_id";
+            $sql = "DELETE FROM Workouts WHERE workout_id = :workout_id";
             $stmt = $this->connection->prepare($sql);
             $stmt->bindParam(':workout_id', $workoutId);
             $stmt->execute();

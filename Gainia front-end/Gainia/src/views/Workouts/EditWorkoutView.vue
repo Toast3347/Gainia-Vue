@@ -73,8 +73,11 @@ async function handleUpdateWorkout() {
     successMessage.value = '';
     errorMessage.value = '';
 
+    const now = new Date();
+    const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
     const payload = {
-      workout_date: `${workout.value.date} 00:00:00`,
+      workout_date: `${workout.value.date} ${time}`,
       exercises: workout.value.exercises.map(ex => ({
         exercise_id: ex.exercise_id,
         custom_exercise_id: ex.custom_exercise_id,

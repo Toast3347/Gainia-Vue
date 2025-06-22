@@ -36,6 +36,10 @@ onMounted(fetchWorkouts);
     <h1 class="display-4 fw-bold text-center mb-4">Welcome, {{ userName }}!</h1>
     <h2 class="text-center text-muted mb-5">Your Recent Workouts</h2>
 
+    <div class="text-center mb-4">
+      <router-link to="/workouts/add" class="btn btn-primary btn-lg">Log New Workout</router-link>
+    </div>
+
     <div v-if="loading" class="text-center">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>

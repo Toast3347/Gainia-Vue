@@ -95,6 +95,12 @@ const router = createRouter({
       component: () => import('../views/Workouts/EditWorkoutView.vue'),
       meta: { requiresAuth: true }
     },
+    {
+      path: '/workouts/add',
+      name: 'add-workout',
+      component: () => import('../views/Workouts/AddWorkoutView.vue'),
+      meta: { requiresAuth: true }
+    },
   ],
 })
 

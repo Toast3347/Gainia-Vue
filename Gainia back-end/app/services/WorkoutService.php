@@ -13,9 +13,9 @@ class WorkoutService
         $this->repository = new WorkoutRepository();
     }
 
-    public function createWorkout($workout, $exercises = []): bool
+    public function createWorkout($userId, $workoutDate, $exercises = []): bool
     {
-        return $this->repository->create($workout, $exercises);
+        return $this->repository->create($userId, $workoutDate, $exercises);
     }
 
     public function getAllWorkoutsByUserId($userId): array
