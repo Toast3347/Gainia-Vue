@@ -31,10 +31,23 @@ class WorkoutController extends Controller
         return $this->respond($result);
     }
 
-    public function updateWorkout($workout, $exercises = [])
+    public function updateWorkout($workoutId)
     {
-        $result = $this->service->updateWorkout($workout, $exercises);
-        return $this->respond($result);
+        $data = $this->createObjectFromPostedJson("stdClass");
+        
+        $workoutDate = $data->workout_date ?? null;
+        $exercises = $data->exercises ?? [];
+
+        if (!$workoutDate) {
+            return $this->respondWithError(400, "Workout date is required.");
+        }
+
+        try {
+            $this->service->updateWorkout($workoutId, $workoutDate, $exercises);
+            return $this->respond(['success' => true]);
+        } catch (\Exception $e) {
+            return $this->respondWithError(500, "Could not update workout: " . $e->getMessage());
+        }
     }
 
     public function deleteWorkout($workoutId)

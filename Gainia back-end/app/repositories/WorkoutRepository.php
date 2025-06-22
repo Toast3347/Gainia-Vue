@@ -31,7 +31,7 @@ class WorkoutRepository extends BaseRepository
 
     public function addExerciseToWorkout($workoutId, $exercise): bool
     {
-        $sql = "INSERT INTO workoutexercises (workout_id, exercise_id, custom_exercise_id, sets, reps, weight)
+        $sql = "INSERT INTO WorkoutExercises (workout_id, exercise_id, custom_exercise_id, sets, reps, weight)
                 VALUES (:workout_id, :exercise_id, :custom_exercise_id, :sets, :reps, :weight)";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(':workout_id', $workoutId);
@@ -56,6 +56,8 @@ class WorkoutRepository extends BaseRepository
     {
         $sql = "
             SELECT 
+                we.exercise_id,
+                we.custom_exercise_id,
                 we.sets,
                 we.reps,
                 we.weight,
@@ -81,7 +83,7 @@ class WorkoutRepository extends BaseRepository
         try {
             $this->connection->beginTransaction();
 
-            $sql = "DELETE FROM workoutexercises WHERE workout_id = :workout_id";
+            $sql = "DELETE FROM WorkoutExercises WHERE workout_id = :workout_id";
             $stmt = $this->connection->prepare($sql);
             $stmt->bindParam(':workout_id', $workoutId);
             $stmt->execute();
@@ -99,25 +101,24 @@ class WorkoutRepository extends BaseRepository
         }
     }
 
-    public function update($workout, $exercises = []): bool
+    public function update($workoutId, $workoutDate, $exercises = []): bool
     {
         try {
             $this->connection->beginTransaction();
 
-            $sql = "UPDATE workouts SET user_id = :user_id, workout_date = :workout_date WHERE workout_id = :workout_id";
+            $sql = "UPDATE Workouts SET workout_date = :workout_date WHERE workout_id = :workout_id";
             $stmt = $this->connection->prepare($sql);
-            $stmt->bindParam(':user_id', $workout->getUserId());
-            $stmt->bindParam(':workout_date', $workout->getWorkoutDate());
-            $stmt->bindParam(':workout_id', $workout->getWorkoutId());
+            $stmt->bindValue(':workout_date', $workoutDate);
+            $stmt->bindValue(':workout_id', $workoutId);
             $stmt->execute();
 
-            $sql = "DELETE FROM workoutexercises WHERE workout_id = :workout_id";
+            $sql = "DELETE FROM WorkoutExercises WHERE workout_id = :workout_id";
             $stmt = $this->connection->prepare($sql);
-            $stmt->bindParam(':workout_id', $workout->getWorkoutId());
+            $stmt->bindValue(':workout_id', $workoutId);
             $stmt->execute();
 
             foreach ($exercises as $exercise) {
-                $this->addExerciseToWorkout($workout->getWorkoutId(), $exercise);
+                $this->addExerciseToWorkout($workoutId, (array)$exercise);
             }
 
             $this->connection->commit();

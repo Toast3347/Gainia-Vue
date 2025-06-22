@@ -33,7 +33,12 @@ async function fetchData() {
       api.get(`/exercises/all/user/${userId}`)
     ]);
 
-    workout.value.date = workoutDetailsRes.data.workout_date.split(' ')[0]; // Get just the YYYY-MM-DD part
+    if (workoutDetailsRes.data) {
+      workout.value.date = workoutDetailsRes.data.workout_date.split(' ')[0];
+    } else {
+      throw new Error("Workout details not found.");
+    }
+
     workout.value.exercises = workoutExercisesRes.data.map(ex => ({ ...ex, isCustom: !ex.exercise_id }));
     allAvailableExercises.value = allExercisesRes.data;
 
@@ -69,7 +74,7 @@ async function handleUpdateWorkout() {
     errorMessage.value = '';
 
     const payload = {
-      workout_date: workout.value.date,
+      workout_date: `${workout.value.date} 00:00:00`,
       exercises: workout.value.exercises.map(ex => ({
         exercise_id: ex.exercise_id,
         custom_exercise_id: ex.custom_exercise_id,
@@ -84,7 +89,11 @@ async function handleUpdateWorkout() {
     setTimeout(() => router.push('/dashboard'), 1500);
 
   } catch (error) {
-    errorMessage.value = "Failed to update workout.";
+    if (error.response && error.response.data && error.response.data.errorMessage) {
+      errorMessage.value = error.response.data.errorMessage;
+    } else {
+      errorMessage.value = "Failed to update workout. An unknown error occurred.";
+    }
   }
 }
 
@@ -92,7 +101,7 @@ onMounted(fetchData);
 </script>
 
 <template>
-  <div class="container py-5">
+  <div class="container py-5 min-vh-100">
     <h1 class="display-4 fw-bold text-center mb-4">Edit Workout</h1>
     
     <div v-if="loading" class="text-center">

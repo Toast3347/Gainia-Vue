@@ -28,6 +28,12 @@ onMounted(fetchWorkoutDetails);
   <div class="container py-5 min-vh-100">
     <h1 class="display-4 fw-bold text-center mb-4">Workout Details</h1>
 
+    <div class="text-center mb-4">
+      <router-link :to="`/workouts/edit/${workoutId}`" class="btn btn-primary btn-lg">
+        Edit Workout
+      </router-link>
+    </div>
+
     <div v-if="loading" class="text-center">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>

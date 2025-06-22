@@ -28,9 +28,9 @@ class WorkoutService
         return $this->repository->getExercisesByWorkoutId($workoutId);
     }
 
-    public function updateWorkout($workout, $exercises = []): bool
+    public function updateWorkout($workoutId, $workoutDate, $exercises = []): bool
     {
-        return $this->repository->update($workout, $exercises);
+        return $this->repository->update($workoutId, $workoutDate, $exercises);
     }
 
     public function deleteWorkout($workoutId): bool
