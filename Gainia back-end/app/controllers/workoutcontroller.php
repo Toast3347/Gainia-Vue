@@ -42,4 +42,10 @@ class WorkoutController extends Controller
         $result = $this->service->deleteWorkout($workoutId);
         return $this->respond($result);
     }
+
+    public function getWorkout($workoutId)
+    {
+        $workout = $this->service->getWorkout($workoutId);
+        return $this->respond($workout);
+    }
 }

@@ -3,7 +3,7 @@
 namespace Controllers;
 
 use Services\ExerciseService;
-
+use Helpers\JwtHelper;
 use Exception;
 
 class ExerciseController extends Controller
@@ -47,10 +47,16 @@ class ExerciseController extends Controller
         $this->respondCreated($exercise);
     }
 
-    public function createCustomExercise($exercise)
+    public function createCustomExercise()
     {
+        $exercise = $this->createObjectFromPostedJson("Models\\CustomExercise");
         $result = $this->service->createCustomExercise($exercise);
-        return $this->respondCreated($result);
+        
+        if (!$result) {
+            return $this->respondWithError(500, "Failed to create custom exercise.");
+        }
+
+        return $this->respondCreated(['success' => true]);
     }
 
     public function updateStandardExercise($exercise)
@@ -71,9 +77,9 @@ class ExerciseController extends Controller
         return $this->respond($result);
     }
 
-    public function deleteCustomExercise($exercise)
+    public function deleteCustomExercise($exerciseId)
     {
-        $result = $this->service->deleteCustomExercise($exercise);
+        $result = $this->service->deleteCustomExercise($exerciseId);
         return $this->respond($result);
     }
 
@@ -81,5 +87,59 @@ class ExerciseController extends Controller
     {
         $exercises = $this->service->getAllExercisesByUserId($userId);
         return $this->respond($exercises);
+    }
+
+    public function getExerciseDetails($exerciseId)
+    {
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+        $token = null;
+
+        if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            $token = $matches[1];
+        }
+
+        if (!$token || !($payload = JwtHelper::validateToken($token))) {
+             return $this->respondWithError(401, 'Unauthorized');
+        }
+
+        $userRole = $payload['role'] ?? 'user';
+
+        $exercise = $this->service->getExerciseForEdit($exerciseId, $userRole);
+
+        if (!$exercise) {
+            return $this->respondWithError(404, 'Exercise not found.');
+        }
+
+        return $this->respond($exercise);
+    }
+
+    public function updateExerciseDetails($exerciseId)
+    {
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+        $token = null;
+
+        if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            $token = $matches[1];
+        }
+
+        if (!$token || !($payload = JwtHelper::validateToken($token))) {
+             return $this->respondWithError(401, 'Unauthorized');
+        }
+
+        $userRole = $payload['role'] ?? 'user';
+        $data = (array) $this->createObjectFromPostedJson("stdClass");
+
+        $success = $this->service->updateExercise($exerciseId, $data, $userRole);
+
+        if (!$success) {
+            return $this->respondWithError(500, 'Could not update exercise.');
+        }
+
+        return $this->respond(['success' => true]);
+    }
+
+    public function deleteExercise(int $exerciseId)
+    {
+        // Implementation of deleteExercise method
     }
 }

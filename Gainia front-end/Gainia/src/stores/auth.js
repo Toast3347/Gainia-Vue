@@ -62,7 +62,12 @@ export const useAuthStore = defineStore('auth', () => {
             const response = await api.post('/login', credentials);
             const { user, token } = response.data;
             setAuth(user, token);
-            router.push('/dashboard');
+
+            if (user.role === 'admin') {
+                router.push('/admin');
+            } else {
+                router.push('/dashboard');
+            }
         } catch (error) {
             console.error('Login failed:', error);
             setMessage('Login failed. Please check your credentials.', 'error');

@@ -37,4 +37,9 @@ class WorkoutService
     {
         return $this->repository->delete($workoutId);
     }
+
+    public function getWorkout($workoutId)
+    {
+        return $this->repository->getById($workoutId);
+    }
 }

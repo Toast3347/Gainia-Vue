@@ -73,8 +73,8 @@ onMounted(() => {
           <p class="lead">No exercises found. Add some exercises to get started!</p>
         </div>
         <div v-else>
-          <table class="table table-striped">
-            <thead>
+          <table class="table table-hover">
+            <thead class="table-light">
               <tr>
                 <th>Name</th>
                 <th>Muscle Group</th>

@@ -32,7 +32,7 @@ class ExerciseRepository extends BaseRepository
 
     public function getById($id)
     {
-        $sql = "SELECT  * FROM Exercises WHERE id = :id";
+        $sql = "SELECT * FROM Exercises WHERE exercise_id = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
@@ -41,24 +41,24 @@ class ExerciseRepository extends BaseRepository
 
     public function update($exercise): bool
     {
-        $sql = "UPDATE Exercises SET name = :name, description = :description, duration = :duration WHERE id = :id";
+        $sql = "UPDATE Exercises SET name = :name, muscle_group = :muscle_group, description = :description WHERE exercise_id = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(':name', $exercise['name']);
+        $stmt->bindParam(':muscle_group', $exercise['muscle_group']);
         $stmt->bindParam(':description', $exercise['description']);
-        $stmt->bindParam(':duration', $exercise['duration']);
-        $stmt->bindParam(':id', $exercise['ID']);
+        $stmt->bindParam(':id', $exercise['id']);
         return $stmt->execute();
     }
 
-    public function delete($exerciseID)
+    public function delete($exerciseId)
     {
         $sql = "DELETE FROM Exercises WHERE exercise_id = :id";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindParam(':id', $exerciseID);
+        $stmt->bindValue(':id', $exerciseId);
         return $stmt->execute();
     }
 
-    // get base exercises and user created ones
+    // get standard exercises (Managed by an admin) and user created ones
     public function getAllExercisesByUserId($id)
     {
         $sql = "

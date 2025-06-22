@@ -26,10 +26,10 @@ To start the back end of the project take the following steps:
 
 ## Login info
 ### Admin
-username: 
-password:
+username: john@example.com
+password: P@ssword12345!
 
 ### User
-username: 
-password:
+username: jane@example.com
+password: P@ssword12345!
 

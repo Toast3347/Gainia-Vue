@@ -37,6 +37,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/Admin/AdminDashboardView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
       path: '/exercises',
       name: 'exercises',
       component: () => import('../views/Exercises/ExercisesView.vue'),
@@ -77,23 +83,36 @@ const router = createRouter({
       name: 'GoalsAdd',
       component: () => import('../views/Goals/AddGoal.vue'),
     },
+    {
+      path: '/workouts/:id',
+      name: 'workout-details',
+      component: () => import('../views/Workouts/WorkoutDetailView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/workouts/edit/:id',
+      name: 'edit-workout',
+      component: () => import('../views/Workouts/EditWorkoutView.vue'),
+      meta: { requiresAuth: true }
+    },
   ],
 })
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   const isAuthenticated = authStore.isAuthenticated;
+  const userRole = authStore.user?.role;
 
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
 
   if (requiresAuth && !isAuthenticated) {
-
     next({ name: 'login' });
+  } else if (requiresAdmin && userRole !== 'admin') {
+    next({ name: 'dashboard' });
   } else if ((to.name === 'login' || to.name === 'create-account') && isAuthenticated) {
-
     next({ name: 'dashboard' });
   } else {
-
     next();
   }
 });

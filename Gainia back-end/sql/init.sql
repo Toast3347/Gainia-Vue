@@ -92,8 +92,8 @@ CREATE TABLE PersonalRecords (
 
 --test data
 INSERT INTO Users (name, email, password, role) VALUES
-('john doe', 'john@example.com', 'hashedpassword1', 'admin'),
-('jane smith', 'jane@example.com', 'hashedpassword2', 'user');
+('john doe', 'john@example.com', '$2y$12$hYN/CzuBTKAn.VCTLxKz.ORINGNlK98qtLWHNcTMCR2RVG.KnSqLG', 'admin'),
+('jane smith', 'jane@example.com', '$2y$12$hYN/CzuBTKAn.VCTLxKz.ORINGNlK98qtLWHNcTMCR2RVG.KnSqLG', 'user');
 
 INSERT INTO Exercises (name, muscle_group, description) VALUES
 ('Bench Press', 'Chest', 'A classic chest exercise using a barbell or dumbbells'),

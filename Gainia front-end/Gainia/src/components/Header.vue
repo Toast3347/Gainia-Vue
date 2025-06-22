@@ -7,6 +7,7 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const isLoggedIn = computed(() => authStore.isAuthenticated);
+const userRole = computed(() => authStore.user?.role);
 
 const logout = () => {
   authStore.logout();
@@ -15,6 +16,10 @@ const logout = () => {
 const login = () => {
   router.push('/login');
 };
+
+const dashboardUrl = computed(() => {
+  return userRole.value === 'admin' ? '/admin' : '/dashboard';
+});
 
 </script>
 
@@ -44,7 +49,7 @@ const login = () => {
         <ul class="navbar-nav ms-auto">
           <template v-if="isLoggedIn">
             <li class="nav-item">
-              <a class="nav-link" href="/dashboard">Dashboard</a>
+              <a class="nav-link" :href="dashboardUrl">Dashboard</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/exercises">Exercises</a>

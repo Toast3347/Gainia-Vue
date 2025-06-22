@@ -16,6 +16,29 @@ use Helpers\JwtHelper;
 
 $router = new Router();
 
+// Middleware for admin routes
+$router->before('GET|POST|PUT|DELETE', '/admin/.*', function() {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+    $token = null;
+
+    if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $token = $matches[1];
+    }
+
+    if (!$token) {
+        header('HTTP/1.1 401 Unauthorized');
+        echo json_encode(['errorMessage' => 'Admin token not found']);
+        exit();
+    }
+
+    $payload = JwtHelper::validateToken($token);
+    if (!$payload || !isset($payload['role']) || $payload['role'] !== 'admin') {
+        header('HTTP/1.1 403 Forbidden');
+        echo json_encode(['errorMessage' => 'You do not have permission to access this resource.']);
+        exit();
+    }
+});
+
 // Middleware for JWT validation
 $router->before('GET|POST|PUT|DELETE', '/.*', function() {
     $request_uri = $_SERVER['REQUEST_URI'];
@@ -57,14 +80,21 @@ $router->before('GET|POST|PUT|DELETE', '/.*', function() {
 
 $router->setNamespace('Controllers');
 
+// Admin routes
+$router->get('/admin/users', 'UserController@getAll');
+$router->delete('/admin/users/{userId}', 'UserController@delete');
+
 //Workout routes
 $router->get('/workouts/user/{userId}', 'WorkoutController@getAllWorkoutsByUserId');
 $router->get('/workouts/{workoutId}/exercises', 'WorkoutController@getWorkoutExercises');
+$router->get('/workouts/{workoutId}', 'WorkoutController@getWorkout');
 $router->post('/workouts', 'WorkoutController@createWorkout');
 $router->put('/workouts/{workoutId}', 'WorkoutController@updateWorkout');
 $router->delete('/workouts/{workoutId}', 'WorkoutController@deleteWorkout');
 
 //Exercise routes
+$router->get('/exercises/details/{exerciseId}', 'ExerciseController@getExerciseDetails');
+$router->put('/exercises/details/{exerciseId}', 'ExerciseController@updateExerciseDetails');
 $router->get('/exercises/standard', 'ExerciseController@getAllStandardExercises');
 $router->get('/exercises/custom/user/{userId}', 'ExerciseController@getAllCustomExercisesByUserId');
 $router->post('/exercises/standard', 'ExerciseController@createStandardExercise');

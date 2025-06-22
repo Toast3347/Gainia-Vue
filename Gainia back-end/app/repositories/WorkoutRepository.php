@@ -45,7 +45,7 @@ class WorkoutRepository extends BaseRepository
 
     public function getAllByUserId($userId): array
     {
-        $sql = "SELECT * FROM workouts WHERE user_id = :user_id";
+        $sql = "SELECT * FROM Workouts WHERE user_id = :user_id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(':user_id', $userId);
         $stmt->execute();
@@ -54,7 +54,22 @@ class WorkoutRepository extends BaseRepository
 
     public function getExercisesByWorkoutId($workoutId): array
     {
-        $sql = "SELECT * FROM workoutexercises WHERE workout_id = :workout_id";
+        $sql = "
+            SELECT 
+                we.sets,
+                we.reps,
+                we.weight,
+                COALESCE(e.name, ce.name) AS exercise_name,
+                COALESCE(e.muscle_group, ce.muscle_group) AS muscle_group
+            FROM 
+                WorkoutExercises we
+            LEFT JOIN 
+                Exercises e ON we.exercise_id = e.exercise_id
+            LEFT JOIN 
+                CustomExercises ce ON we.custom_exercise_id = ce.custom_exercise_id
+            WHERE 
+                we.workout_id = :workout_id
+        ";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(':workout_id', $workoutId);
         $stmt->execute();
@@ -111,5 +126,15 @@ class WorkoutRepository extends BaseRepository
             $this->connection->rollBack();
             throw $e;
         }
+    }
+
+    public function getById($workoutId)
+    {
+        $sql = "SELECT * FROM Workouts WHERE workout_id = :workout_id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindParam(':workout_id', $workoutId);
+        $stmt->execute();
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $result ?: null;
     }
 }

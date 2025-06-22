@@ -38,11 +38,12 @@ function editExercise(exerciseId) {
 async function deleteExercise(exerciseId) {
   if (confirm("Are you sure you want to delete this exercise?")) {
     try {
-      await axios.delete(`http://localhost/exercises/custom/user/${exerciseId}`);
+      await api.delete(`/exercises/custom/${exerciseId}`);
 
       fetchExercises();
 
       alert("Exercise deleted successfully!");
+
     } catch (error) {
       console.error("Error deleting exercise:", error);
       alert("Failed to delete the exercise. Please try again.");
@@ -75,8 +76,8 @@ onMounted(() => {
           <p class="lead">No exercises found. Add some exercises to get started!</p>
         </div>
         <div v-else>
-          <table class="table table-striped">
-            <thead>
+          <table class="table table-hover">
+            <thead class="table-light">
               <tr>
                 <th>Name</th>
                 <th>Muscle Group</th>

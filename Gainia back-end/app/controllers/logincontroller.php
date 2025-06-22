@@ -56,7 +56,8 @@ class Logincontroller extends Controller{
 
                 $payload = [
                     'user_id' => $user['user_id'],
-                    'username' => $user['name']
+                    'username' => $user['name'],
+                    'role' => $user['role']
                 ];
                 $token = JwtHelper::generateToken($payload);
 
