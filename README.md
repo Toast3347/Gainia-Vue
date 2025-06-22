@@ -33,3 +33,63 @@ password: P@ssword12345!
 username: jane@example.com
 password: P@ssword12345!
 
+
+
+
+
+##Extra's voor moodle
+###Required functionality: 
+Registratie en inloggen:
+
+1. Account aanmaken, inloggen en uitloggen.
+
+2. Wachtwoorden veilig opslaan.
+
+
+Trainingslogboek:
+
+1. Gebruikers kunnen kiezen uit een lijst van vooraf toegevoegde oefeningen.
+
+2. De standaard oefeningen kunnen worden toegevoegd, bewerkt of verwijderd worden door een beheerder.
+
+3. Gebruikers kunnen trainingen toevoegen met:
+
+- Oefeningen (bijv. Bench press, Squats, Deadlifts).
+
+- Sets, reps en gewichten.
+
+- Datum en tijd.
+
+4. Mogelijkheid om eigen oefeningen toe te voegen. Deze oefeningen worden dan apart weergegeven en zijn alleen zichtbaar voor de gebruiker. Deze oefening bevat:
+
+- De naam van de oefening.
+
+- De spiergroep die het traint (bijv. Rug, Biceps, Triceps, Borst, cardio, enz…).
+
+- Een optionele omschrijving van de oefening.
+
+Trainingsoverzicht:
+
+1. Een overzicht waar gebruikers hun trainingen kunnen beheren.
+
+2. Herhalende trainingen toevoegen.
+
+
+Voortgangsmonitoring:
+
+1. Grafieken tonen gewichtsprogressie en persoonlijke records.
+
+2. Overzicht van wekelijkse trainingsfrequentie en totaal aantal uitgevoerde oefeningen.
+
+
+Doelen stellen:
+
+1. Doelen instellen zoals: Ik wil 10 kilo meer liften met Bench press binnen een maand.
+
+2. Optioneel: Automatische updates over voortgang naar het gestelde doel.
+
+
+Dit is een realistische applicatie omdat het gebruikt kan worden om je sportschool progressie bij te houden. Dit is iets waar al meerdere (web)applicaties voor zijn gemaakt en ook mijn inspiratie achter dit project.
+Dit gaat verder dan wat in de lessen is besproken door het gebruik van onderandere grafieken, de grote van de applicatie en de complexiteit van de applicatie (specifiek de workouts waren "interessant" om te implementeren).
+
+###

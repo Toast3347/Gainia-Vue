@@ -2,7 +2,7 @@
 import { useAuthStore } from '@/stores/auth';
 import { computed } from 'vue'
 import { useRouter } from 'vue-router';
-
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 const authStore = useAuthStore();
 const router = useRouter();
 
