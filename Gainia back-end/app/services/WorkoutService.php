@@ -3,19 +3,28 @@
 namespace Services;
 
 use Repositories\WorkoutRepository;
+use Services\PrService;
 
 class WorkoutService
 {
     private $repository;
+    private $prService;
 
     public function __construct()
     {
         $this->repository = new WorkoutRepository();
+        $this->prService = new PrService();
     }
 
     public function createWorkout($userId, $workoutDate, $exercises = []): bool
     {
-        return $this->repository->create($userId, $workoutDate, $exercises);
+        $result = $this->repository->create($userId, $workoutDate, $exercises);
+        if ($result) {
+            foreach ($exercises as $exercise) {
+                $this->prService->checkForNewPr($userId, (array)$exercise, $workoutDate);
+            }
+        }
+        return $result;
     }
 
     public function getAllWorkoutsByUserId($userId): array

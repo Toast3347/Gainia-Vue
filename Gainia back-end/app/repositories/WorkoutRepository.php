@@ -45,7 +45,7 @@ class WorkoutRepository extends BaseRepository
 
     public function getAllByUserId($userId): array
     {
-        $sql = "SELECT * FROM Workouts WHERE user_id = :user_id";
+        $sql = "SELECT * FROM Workouts WHERE user_id = :user_id ORDER BY workout_date DESC";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(':user_id', $userId);
         $stmt->execute();

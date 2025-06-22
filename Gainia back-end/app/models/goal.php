@@ -13,7 +13,7 @@ class Goal
     public float $target_weight;
     public int $target_reps;
     public DateTime $deadline;
-    public bool $achieved;
+    public bool $achieved = false;
     public DateTime $created_at;
     public string $exercise_name;
     
@@ -35,22 +35,22 @@ class Goal
     }
 
  
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): void
+    public function setCreatedAt(DateTime $createdAt): void
     {
         $this->created_at = $createdAt;
     }
 
-    public function getDeadline(): \DateTime
+    public function getDeadline(): DateTime
     {
         return $this->deadline;
     }
 
-    public function setDeadline(\DateTime $deadline): void
+    public function setDeadline(DateTime $deadline): void
     {
         $this->deadline = $deadline;
     }
