@@ -3,7 +3,7 @@ USE GainiaDB;
 
 CREATE TABLE Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -92,8 +92,8 @@ CREATE TABLE PersonalRecords (
 
 --test data
 INSERT INTO Users (name, email, password, role) VALUES
-('john_doe', 'john@example.com', 'hashedpassword1', 'admin'),
-('jane_smith', 'jane@example.com', 'hashedpassword2', 'user');
+('john doe', 'john@example.com', '$2y$12$hYN/CzuBTKAn.VCTLxKz.ORINGNlK98qtLWHNcTMCR2RVG.KnSqLG', 'admin'),
+('jane smith', 'jane@example.com', '$2y$12$hYN/CzuBTKAn.VCTLxKz.ORINGNlK98qtLWHNcTMCR2RVG.KnSqLG', 'user');
 
 INSERT INTO Exercises (name, muscle_group, description) VALUES
 ('Bench Press', 'Chest', 'A classic chest exercise using a barbell or dumbbells'),

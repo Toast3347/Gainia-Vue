@@ -1,19 +1,23 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import api from "@/services/api";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const exercises = ref([]);
 const errorMessage = ref("");
 const loading = ref(false);
 
-const user = JSON.parse(localStorage.getItem("user"));
-const userId = user ? user.user_id : 1; //change this later to null
+const authStore = useAuthStore();
+const userId = authStore.user?.user_id; 
+
 async function fetchExercises() {
   loading.value = true;
   errorMessage.value = "";
 
   try {
-    const response = await axios.get("http://localhost/exercises/custom/user/" + userId);
+    const response = await api.get("/exercises/custom/user/" + userId);
     exercises.value = response.data;
   } catch (error) {
     errorMessage.value = error.response
@@ -25,19 +29,20 @@ async function fetchExercises() {
 }
 
 function editExercise(exerciseId) {
-  alert(`Edit exercise with ID: ${exerciseId}`);
-  
-  
+  if (!exerciseId) return;
+  router.push(`/exercises/edit/${exerciseId}`);
+
 }
 
 async function deleteExercise(exerciseId) {
   if (confirm("Are you sure you want to delete this exercise?")) {
     try {
-      await axios.delete(`http://localhost/exercises/custom/user/${exerciseId}`);
+      await api.delete(`/exercises/custom/${exerciseId}`);
 
       fetchExercises();
 
       alert("Exercise deleted successfully!");
+
     } catch (error) {
       console.error("Error deleting exercise:", error);
       alert("Failed to delete the exercise. Please try again.");
@@ -70,8 +75,8 @@ onMounted(() => {
           <p class="lead">No exercises found. Add some exercises to get started!</p>
         </div>
         <div v-else>
-          <table class="table table-striped">
-            <thead>
+          <table class="table table-hover">
+            <thead class="table-light">
               <tr>
                 <th>Name</th>
                 <th>Muscle Group</th>
@@ -81,7 +86,7 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(exercise, index) in exercises" :key="exercise.exercise_id">
+              <tr v-for="(exercise) in exercises" :key="exercise.custom_exercise_id">
                 <td>{{ exercise.name }}</td>
                 <td>{{ exercise.muscle_group }}</td>
                 <td>{{ exercise.description }}</td>
@@ -89,13 +94,13 @@ onMounted(() => {
                 <td>
                   <button
                     class="btn btn-primary btn-sm me-2"
-                    @click="editExercise(exercise.exercise_id)"
+                    @click="editExercise(exercise.custom_exercise_id)"
                   >
                     Edit
                   </button>
                   <button
                     class="btn btn-danger btn-sm"
-                    @click="deleteExercise(exercise.exercise_id)"
+                    @click="deleteExercise(exercise.custom_exercise_id)"
                   >
                     Delete
                   </button>

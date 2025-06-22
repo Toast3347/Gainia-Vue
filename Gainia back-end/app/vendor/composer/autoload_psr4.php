@@ -10,5 +10,7 @@ return array(
     'Routers\\' => array($baseDir . '/routers'),
     'Repositories\\' => array($baseDir . '/repositories'),
     'Models\\' => array($baseDir . '/models'),
+    'Helpers\\' => array($baseDir . '/helpers'),
+    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'Controllers\\' => array($baseDir . '/controllers'),
 );

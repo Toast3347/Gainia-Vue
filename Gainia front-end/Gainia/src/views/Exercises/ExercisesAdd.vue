@@ -1,6 +1,10 @@
 <script setup>
-import { ref } from "vue";
-import axios from "axios";
+import { ref, computed } from "vue";
+import api from "@/services/api";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
+const userRole = computed(() => authStore.user?.role);
 
 const exerciseName = ref("");
 const muscleGroup = ref("");
@@ -10,22 +14,50 @@ const successMessage = ref("");
 
 async function addExercise() {
   try {
-    const response = await axios.post("http://localhost/exercises/standard", {
+    clearMessages();
+
+    let endpointUrl = "";
+    if (userRole.value === 'admin') {
+      endpointUrl = "/exercises/standard";
+    } else {
+      endpointUrl = "/exercises/custom";
+    }
+
+    const payload = {
       name: exerciseName.value,
       muscle_group: muscleGroup.value,
       description: description.value,
-    });
-    successMessage.value = "Exercise added successfully!";
-    errorMessage.value = "";
-    exerciseName.value = "";
-    muscleGroup.value = "";
-    description.value = "";
+    };
+
+    if (userRole.value !== 'admin') {
+      payload.user_id = authStore.user?.user_id;
+    }
+
+    const response = await api.post(endpointUrl, payload);
+    
+    if (response.status === 201) {
+      successMessage.value = "Exercise added successfully!";
+      clearForm();
+    } else {
+      errorMessage.value = "Failed to add exercise.";
+    }
   } catch (error) {
     errorMessage.value = error.response
       ? error.response.data.message
       : "An error occurred while adding the exercise.";
     successMessage.value = "";
   }
+}
+
+function clearMessages() {
+  errorMessage.value = "";
+  successMessage.value = "";
+}
+
+function clearForm() {
+  exerciseName.value = "";
+  muscleGroup.value = "";
+  description.value = "";
 }
 </script>
 

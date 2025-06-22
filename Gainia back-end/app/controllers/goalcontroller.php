@@ -27,7 +27,7 @@ class GoalController extends Controller
         try {
             sleep(2);
             error_log("enetering createGoal()");
-            $goal = $this->createObjectFromPostedJson("Models\\Goal");
+            $goal = $this->createObjectFromPostedJson("Models\Goal");
             error_log("Goal: " . json_encode($goal));
             $confirm = $this->service->createGoal($goal);
             if (!$confirm) {
@@ -36,7 +36,7 @@ class GoalController extends Controller
         } catch (\Exception $e) {
             return $this->respondWithError(500, $e->getMessage());
         }
-        return $this->respond($confirm);
+        return $this->respondCreated($confirm);
     }
 
     public function updateGoal($goal)

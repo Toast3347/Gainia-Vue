@@ -1,156 +1,117 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import { useRouter } from "vue-router";
+import api from "@/services/api";
+import { useAuthStore } from "@/stores/auth";
 
-const exerciseId = ref(""); // Stores the selected exercise ID
-const exerciseType = ref(""); // Stores the type of the selected exercise (standard or custom)
-const targetWeight = ref("");
-const targetReps = ref("");
-const deadline = ref("");
-const errorMessage = ref("");
-const successMessage = ref("");
+const router = useRouter();
+const authStore = useAuthStore();
 
-const exercises = ref([]);
-const loading = ref(false);
+const goal = ref({
+  exercise_id: null,
+  custom_exercise_id: null,
+  target_weight: '',
+  target_reps: '',
+  deadline: ''
+});
 
-const user = JSON.parse(localStorage.getItem("user"));
-const userId = user ? user.user_id : 1; // Change this later to null
+const selectedExercise = ref(null);
+const allAvailableExercises = ref([]);
 
-async function addGoal() {
-  errorMessage.value = "";
-  successMessage.value = "";
-
-  if (!exerciseId.value || !exerciseType.value || !targetWeight.value || !targetReps.value || !deadline.value) {
-    errorMessage.value = "All fields are required.";
-    return;
-  }
-
-  try {
-    const payload = {
-      user_id: userId,
-      target_weight: targetWeight.value,
-      target_reps: targetReps.value,
-      deadline: deadline.value,
-      achieved: false,
-    };
-
-    if (exerciseType.value === "standard") {
-      payload.exercise_id = exerciseId.value; 
-    } else if (exerciseType.value === "custom") {
-      payload.custom_exercise_id = exerciseId.value;
-    }
-
-    await axios.post("http://localhost/goals", payload);
-
-    successMessage.value = "Goal added successfully!";
-    exerciseId.value = "";
-    exerciseType.value = "";
-    targetWeight.value = "";
-    targetReps.value = "";
-    deadline.value = "";
-  } catch (error) {
-    errorMessage.value = error.response
-      ? error.response.data.message
-      : "An error occurred while adding the goal.";
-  }
-}
+const loading = ref(true);
+const errorMessage = ref('');
+const successMessage = ref('');
+const userId = authStore.user?.user_id;
 
 async function fetchAllExercises() {
-  loading.value = true;
-  errorMessage.value = "";
-
+  if (!userId) {
+    errorMessage.value = "User not found.";
+    loading.value = false;
+    return;
+  }
   try {
-    const response = await axios.get(`http://localhost/exercises/all/user/${userId}`);
-    exercises.value = response.data;
+    loading.value = true;
+    const response = await api.get(`/exercises/all/user/${userId}`);
+    allAvailableExercises.value = response.data;
   } catch (error) {
-    errorMessage.value = error.response
-      ? error.response.data.message
-      : "An error occurred while fetching exercises.";
+    errorMessage.value = "Failed to load exercises.";
   } finally {
     loading.value = false;
   }
 }
 
-function updateExerciseType() {
-  const selectedExercise = exercises.value.find(ex => ex.id == exerciseId.value);
-  exerciseType.value = selectedExercise ? selectedExercise.type : "";
-  console.log("Updated exerciseType:", exerciseType.value); // Debugging
+async function handleAddGoal() {
+  errorMessage.value = '';
+  successMessage.value = '';
+
+  if (!selectedExercise.value) {
+    errorMessage.value = "Please select an exercise.";
+    return;
+  }
+  
+  try {
+    const payload = {
+      user_id: userId,
+      exercise_id: selectedExercise.value.type === 'standard' ? selectedExercise.value.id : null,
+      custom_exercise_id: selectedExercise.value.type === 'custom' ? selectedExercise.value.id : null,
+      target_weight: goal.value.target_weight,
+      target_reps: goal.value.target_reps,
+      deadline: goal.value.deadline,
+    };
+    
+    await api.post(`/goals`, payload);
+    successMessage.value = "Goal added successfully! Redirecting...";
+    setTimeout(() => router.push('/goals'), 2000);
+
+  } catch (error) {
+    errorMessage.value = error.response?.data?.errorMessage || "Failed to add goal.";
+  }
 }
 
-onMounted(() => {
-  fetchAllExercises();
-});
+onMounted(fetchAllExercises);
 </script>
 
 <template>
-  <main class="page container py-5">
-    <h1 class="display-4 fw-bold text-center mb-4">Add Goal</h1>
+  <main class="page container py-5 min-vh-100">
+    <h1 class="display-4 fw-bold text-center mb-4">Add New Goal</h1>
 
-    <div v-if="errorMessage" class="alert alert-danger">
-      {{ errorMessage }}
+    <div v-if="loading" class="text-center">
+      <div class="spinner-border text-primary" role="status"></div>
     </div>
 
-    <div v-if="successMessage" class="alert alert-success">
-      {{ successMessage }}
-    </div>
+    <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+    <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
-    <form @submit.prevent="addGoal">
+    <form @submit.prevent="handleAddGoal" v-if="!loading && !successMessage" class="w-75 mx-auto">
       <div class="mb-3">
-        <label for="exerciseId" class="form-label">Exercise Name</label>
-        <select
-          id="exerciseId"
-          class="form-select"
-          v-model="exerciseId"
-          @change="updateExerciseType"
-          required
-        >
-          <option value="" disabled>Select an exercise</option>
-          <option
-            v-for="exercise in exercises"
-            :key="exercise.id"
-            :value="exercise.id"
-          >
-            {{ exercise.name }} ({{ exercise.type }})
-          </option>
+        <label for="exercise" class="form-label">Exercise</label>
+        <select id="exercise" class="form-select" v-model="selectedExercise" required>
+          <option :value="null" disabled>Select an exercise</option>
+          <optgroup label="Standard Exercises">
+            <option v-for="ex in allAvailableExercises.filter(e => e.type === 'standard')" :key="ex.id" :value="ex">{{ ex.name }}</option>
+          </optgroup>
+          <optgroup label="Custom Exercises">
+            <option v-for="ex in allAvailableExercises.filter(e => e.type === 'custom')" :key="ex.id" :value="ex">{{ ex.name }}</option>
+          </optgroup>
         </select>
       </div>
 
       <div class="mb-3">
         <label for="targetWeight" class="form-label">Target Weight (kg)</label>
-        <input
-          type="number"
-          id="targetWeight"
-          class="form-control"
-          v-model="targetWeight"
-          placeholder="Enter target weight"
-          required
-        />
+        <input type="number" id="targetWeight" class="form-control" v-model.number="goal.target_weight" placeholder="e.g., 100" required />
       </div>
 
       <div class="mb-3">
         <label for="targetReps" class="form-label">Target Reps</label>
-        <input
-          type="number"
-          id="targetReps"
-          class="form-control"
-          v-model="targetReps"
-          placeholder="Enter target reps"
-          required
-        />
+        <input type="number" id="targetReps" class="form-control" v-model.number="goal.target_reps" placeholder="e.g., 5" required />
       </div>
 
       <div class="mb-3">
         <label for="deadline" class="form-label">Deadline</label>
-        <input
-          type="date"
-          id="deadline"
-          class="form-control"
-          v-model="deadline"
-          required
-        />
+        <input type="date" id="deadline" class="form-control" v-model="goal.deadline" required />
       </div>
 
-      <button type="submit" class="btn btn-primary">Add Goal</button>
+      <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">Add Goal</button>
     </form>
   </main>
 </template>

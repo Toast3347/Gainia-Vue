@@ -64,9 +64,28 @@ class ExerciseService{
         $exercise = $this->customRepository->update($exercise);
         return $exercise;
     }
-    public function deleteCustomExercise($exercise): bool
+    public function deleteCustomExercise($exerciseId): bool
     {
-        $exercise = $this->customRepository->delete($exercise);
-        return $exercise;
+        return $this->customRepository->delete($exerciseId);
+    }
+    
+    public function updateExercise($exerciseId, $data, $userRole)
+    {
+        $data['id'] = $exerciseId;
+        if ($userRole === 'admin') {
+            return $this->repository->update($data);
+        } else {
+            return $this->customRepository->update($data);
+        }
+    }
+    
+    //retrieves either a standard exercise (for an admin) or a custom exercise (for a user) to edit
+    public function getExerciseForEdit(int $exerciseId, string $userRole)
+    {
+        if ($userRole === 'admin') {
+            return $this->repository->getById($exerciseId);
+        } else {
+            return $this->customRepository->getById($exerciseId);
+        }
     }
 }

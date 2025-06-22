@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use Services\LoginService;
+use Helpers\JwtHelper;
 
 class Logincontroller extends Controller{
     private $service;
@@ -12,10 +13,18 @@ class Logincontroller extends Controller{
         $this->service = new LoginService();
     }
 
-    public function createUser($user)
+    public function createUser()
     {
-        $result = $this->service->createUser($user);
-        return $this->respond($result);
+        try {
+            $user = $this->createObjectFromPostedJson("Models\\Requests\\CreateAccount");
+            $result = $this->service->createUser($user);
+            return $this->respond($result);
+        }catch(\InvalidArgumentException $e) {
+            return $this->respondWithError(400, $e->getMessage());
+        }
+        catch (\Exception $e) {
+            return $this->respondWithError(500, $e->getMessage());
+        }
     }
 
     public function getUserByUsername($username)
@@ -36,11 +45,32 @@ class Logincontroller extends Controller{
         return $this->respond($result);
     }
 
-    public function login($username, $password)
+    public function login()
     {
-        $result = $this->service->login($username, $password);
-        return $this->respond($result);
-    }
+        try {
+            $loginDetails = $this->createObjectFromPostedJson("Models\\requests\\Login");
+            $user = $this->service->getUserByUsername($loginDetails->username);
 
+            if ($user && password_verify($loginDetails->password, $user['password'])) {
+                unset($user['password']); // Remove password from user data for security purposes
+
+                $payload = [
+                    'user_id' => $user['user_id'],
+                    'username' => $user['name'],
+                    'role' => $user['role']
+                ];
+                $token = JwtHelper::generateToken($payload);
+
+                return $this->respond([
+                    'token' => $token,
+                    'user' => $user
+                ]);
+            } else {
+                return $this->respondWithError(401, 'Invalid credentials');
+            }
+        } catch (\Exception $e) {
+            return $this->respondWithError(500, $e->getMessage());
+        }
+    }
 
 }

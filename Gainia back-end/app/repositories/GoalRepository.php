@@ -38,7 +38,7 @@ class GoalRepository extends BaseRepository
             INSERT INTO Goals (user_id, exercise_id, custom_exercise_id, target_weight, target_reps, deadline, achieved)
             VALUES (:user_id, :exercise_id, :custom_exercise_id, :target_weight, :target_reps, :deadline, :achieved)
         ";
-
+        $deadline = $goal->getDeadline()->format('Y-m-d H:i:s');
         $stmt = $this->connection->prepare($query);
 
         $stmt->bindParam(':user_id', $goal->user_id, \PDO::PARAM_INT);
@@ -46,7 +46,7 @@ class GoalRepository extends BaseRepository
         $stmt->bindParam(':custom_exercise_id', $goal->custom_exercise_id, \PDO::PARAM_INT);
         $stmt->bindParam(':target_weight', $goal->target_weight, \PDO::PARAM_STR);
         $stmt->bindParam(':target_reps', $goal->target_reps, \PDO::PARAM_INT);
-        $stmt->bindParam(':deadline', $goal->deadline->format('Y-m-d'), \PDO::PARAM_STR);
+        $stmt->bindParam(':deadline', $deadline);
         $stmt->bindParam(':achieved', $goal->achieved, \PDO::PARAM_BOOL);
 
         return $stmt->execute();
@@ -64,7 +64,7 @@ class GoalRepository extends BaseRepository
     }
     public function deleteGoal(int $goalId)
     {
-        $query = "DELETE FROM Goals WHERE id = :id";
+        $query = "DELETE FROM Goals WHERE goal_id = :id";
         $stmt = $this->connection->prepare($query);
         $stmt->bindParam(':id', $goalId, \PDO::PARAM_INT);
         return $stmt->execute();

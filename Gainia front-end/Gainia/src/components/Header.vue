@@ -1,4 +1,26 @@
 <script setup>
+import { useAuthStore } from '@/stores/auth';
+import { computed } from 'vue'
+import { useRouter } from 'vue-router';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+const authStore = useAuthStore();
+const router = useRouter();
+
+const isLoggedIn = computed(() => authStore.isAuthenticated);
+const userRole = computed(() => authStore.user?.role);
+
+const logout = () => {
+  authStore.logout();
+};
+
+const login = () => {
+  router.push('/login');
+};
+
+const dashboardUrl = computed(() => {
+  return userRole.value === 'admin' ? '/admin' : '/dashboard';
+});
+
 </script>
 
 <template>
@@ -25,25 +47,29 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/dashboard">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/exercises">Exercises</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/goals">Goals</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/progress">Progress</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/personalrecords">PR's</a>
-          </li>
+          <template v-if="isLoggedIn">
+            <li class="nav-item">
+              <a class="nav-link" :href="dashboardUrl">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/exercises">Exercises</a>
+            </li>
+          </template>
+          <template v-if="isLoggedIn && userRole !== 'admin'">
+            <li class="nav-item">
+              <a class="nav-link" href="/goals">Goals</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/progress">Progress</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/personalrecords">PR's</a>
+            </li>
+          </template>
         </ul>
         <div class="d-flex ms-3">
-            <!--change based on if user is logged in -->
-          <a href="/login" class="btn btn-primary me-2">Login</a>
+          <button v-if="!isLoggedIn" @click="login" class="btn btn-primary me-2">Login</button>
+          <button v-else @click="logout" class="btn btn-primary me-2">Logout</button>
         </div>
       </div>
     </nav>

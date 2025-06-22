@@ -19,16 +19,6 @@ class ProgressController extends Controller
         return $this->respond($progress);
     }
 
-    public function createProgress()
-    {
-        try {
-            $progress = $this->createObjectFromPostedJson("Models\\Progress");
-            $result = $this->service->createProgress($progress);
-            return $this->respond($result);
-        } catch (\Exception $e) {
-            return $this->respondWithError(500, $e->getMessage());
-        }
-    }
 
     public function updateProgress()
     {

@@ -2,10 +2,16 @@
 
 namespace Controllers;
 
+
 class Controller
 {
     public function respond($data){
-        $this->respondWithCode(200, $data);
+        return $this->respondWithCode(200, $data);
+    }
+
+    public function respondCreated($data)
+    {
+        return $this->respondWithCode(201, $data);
     }
 
 
@@ -29,10 +35,18 @@ class Controller
 
         $object = new $className();
         foreach ($data as $key => $value) {
-            if(is_object($value)) {
-                continue;
+            $reflection = new \ReflectionClass($object);
+            if ($reflection->hasProperty($key)) {
+                $property = $reflection->getProperty($key);
+                $type = $property->getType();
+                if ($type && $type->getName() === 'DateTime' && is_string($value)) {
+                    $object->{$key} = new \DateTime($value);
+                } else {
+                    $object->{$key} = $value;
+                }
+            } else {
+                $object->{$key} = $value;
             }
-            $object->{$key} = $value;
         }
         return $object;
     }
