@@ -37,8 +37,8 @@ password: P@ssword12345!
 
 
 
-##Extra's voor moodle
-###Required functionality: 
+## Extra's voor moodle
+### Required functionality: 
 Registratie en inloggen:
 
 1. Account aanmaken, inloggen en uitloggen.
@@ -92,19 +92,19 @@ Doelen stellen:
 Dit is een realistische applicatie omdat het gebruikt kan worden om je sportschool progressie bij te houden. Dit is iets waar al meerdere (web)applicaties voor zijn gemaakt en ook mijn inspiratie achter dit project.
 Dit gaat verder dan wat in de lessen is besproken door het gebruik van onderandere grafieken, de grote van de applicatie en de complexiteit van de applicatie (specifiek de workouts waren "interessant" om te implementeren).
 
-###CSS:
+### CSS:
 Voor dit project is een klein beetje eigen css gebruikt, maar voor het meeste is Bootstrap gebruikt. 
 Door het gebruikt van Bootstrap is de applicatie responsive. 
 Er zijn voor deze applicatie vooral standaard templates gebruikt en heb daar niet veel extra vorm aan gegeven.
 
-###Frontend architecture:
+### Frontend architecture:
 In de frontend zijn de routes te vinden onder src/router/index.js
 Statemanagement is opgezet met Pinia en is terug te vinden in src/stores/auth.js
 
-###REST API:
+### REST API:
 Filtering is geimplementeerd.
 Pagination is helaas (nog) niet geimplementeerd.
 Het retourneren van een error is ook ondersteeund doormiddel van de respondWithError methode in de controller.php
 
-###Authentication:
+### Authentication:
 Role Based Access Control is geimplementeerd voor de Backend is dit terug te zien in de router onder middleware (Note!: Voor dit project is in de Backend de Bramus router gebruikt :)), voor de Frontend is dit terug te zien in bijvoorbeeld de header component, waar links niet worden getoont als een gebruiker niet is ingelogd.
